@@ -1,0 +1,32 @@
+https://tech-fr.netlify.app/articles/fr515480/index.html
+
+
+Synology SSO Server - Gérez l'autorisation et accédez aux services à partir du site
+Il y a quelque temps, j'ai été confronté à la tâche, afin de protéger les secrets commerciaux de mes clients, de refuser d'utiliser des services cloud tiers.
+La première et la plus logique est de leur donner accès à la Synology déjà disponible.
+Et puis il y avait un désir de le faire magnifiquement, non pas avec un nom d'utilisateur / mot de passe séparé, mais en utilisant ceux déjà émis plus tôt à partir du compte personnel. Une transition transparente de votre compte personnel aux services Synology est ce dont vous avez besoin.
+Description et script sous la coupe.
+
+Pour plus de travail, nous avons besoin d'un serveur LDAP et d'un serveur SSO installés.
+SSO Server est l'implémentation propriétaire OAuth2.0 de Synology.
+Nous configurons LDAP et créons l'utilisateur souhaité, définissons les droits d'accès aux services pour lui.
+Ensuite, le script php que j'ai écrit, que nous installons sur le site, entre en service. Ce n'est pas grand et est disponible sur GitHub .
+
+C'est simple avec lui. Téléchargez et placez sur le site dans le dossier / my.
+
+Dans config.php, vous devez remplacer les valeurs suivantes par les vôtres:
+
+APP_ID - vous l'obtiendrez à l'étape suivante, lors de l'enregistrement avec SSO Server
+SSO_HOST - Adresse hôte pour accéder à Synology
+LOCAL_HOST - l'adresse du site sur lequel se trouve le script
+REDIRECT_URI - l'adresse où le script SSO_Oauth.php est disponible
+
+
+Dans index.php (endroit indiqué), ajoutez une logique supplémentaire ou des redirections une fois que l'utilisateur s'est connecté avec succès.
+
+
+Eh bien, le script de traitement des demandes lui-même:
+SSO_Oauth.php
+
+Ensuite, vous devez lier l'autorisation sur le site via le serveur SSO. Tout y est assez simple - Ouvrez SSO Server > Liste des applications > Ajouter > Entrez le nom et l'adresse URI dans le script SSO_Oauth.php. Après avoir cliqué sur "Ok", l' ID de l' application sera généré . Il doit être copié et placé dans notre config.php> APP_ID .
+Ainsi, si un utilisateur est autorisé sur votre site via SSO, puis en cliquant sur un lien vers l'un des services Synology auxquels il a accès en LDAP, il n'aura pas à se ré-autoriser. C'est vrai dans le sens inverse - s'il est autorisé dans votre cloud, alors le compte personnel sur le site sera également disponible.
